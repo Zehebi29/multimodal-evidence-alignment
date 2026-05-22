@@ -114,20 +114,6 @@ print(result.uncertain)  # False = diagnosis issued
 - [Extending MEA](docs/extending.md)
 - [Architecture](docs/architecture.md)
 
-## Citation
-
-If you use MEA in your research, please cite:
-
-```bibtex
-@article{zheng2026mea,
-  title={Multimodal Evidence Alignment: Uncertainty-Aware Case-Level Diagnosis
-         in Endoscopic Ultrasound},
-  author={Zheng, Hangbin and Bao, Jinsong and others},
-  journal={arXiv preprint},
-  year={2026}
-}
-```
-
 ## License
 
 MIT. See [LICENSE](LICENSE).
