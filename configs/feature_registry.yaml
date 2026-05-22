@@ -1,0 +1,101 @@
+# Feature Registry — 特征注册表
+# Multimodal Evidence Alignment (MEA) 的特征获取配置
+#
+# 扩展方式：
+#   1. 新增特征：在 features 下添加条目
+#   2. 新增 source 类型：在 source_types 下添加定义，并实现对应 extractor
+#   3. 新增模态：在 modalities 下添加定义
+#
+# 最后更新: 2026-05-06
+
+# ── 特征定义 ──
+features:
+  lesion_location:
+    source: auto
+    extractor: device
+    required: true
+    description: "病变位置（胃底/食管/直肠等）"
+    values: ["胃底", "胃体", "胃窦", "贲门", "食管", "十二指肠", "直肠", "结肠", "胰腺"]
+    default: null
+    mi_weight: 1.1497  # Mutual Information (bits) from feature_analysis.py
+
+  echo_pattern:
+    source: visual
+    extractor: echo_classifier
+    required: true
+    depends_on: [detection_bbox]
+    description: "回声模式（高/低/混合回声）"
+    values: ["hyperechoic", "hypoechoic", "mixed"]
+    default: null
+    mi_weight: 0.4676
+
+  homogeneous:
+    source: visual
+    extractor: texture_analyzer
+    required: true
+    depends_on: [detection_bbox]
+    description: "回声同质性（均匀/不均匀）"
+    values: ["homogeneous", "heterogeneous"]
+    default: null
+    mi_weight: 0.3050
+
+  layer_origin:
+    source: doctor
+    prompt: "请输入病变起源层次"
+    required: false
+    description: "起源层次"
+    values: ["mucosa", "submucosa", "muscularis_propria", "serosa"]
+    default: "unknown"
+    mi_weight: 0.5764
+
+# ── Source 类型定义 ──
+source_types:
+  auto:
+    description: "自动获取（设备/系统直接提供）"
+    handler: auto_handler
+    requires_interaction: false
+
+  visual:
+    description: "视觉识别（从图像中提取）"
+    handler: visual_handler
+    requires_interaction: false
+    requires_model: true
+
+  doctor:
+    description: "医生输入（需要人工交互）"
+    handler: doctor_handler
+    requires_interaction: true
+
+  external:
+    description: "外部系统（LIS/PACS等）"
+    handler: external_handler
+    requires_interaction: false
+
+# ── 模态定义（未来扩展） ──
+modalities:
+  b_mode:
+    description: "B超（当前默认）"
+    features: [lesion_location, echo_pattern, homogeneous, layer_origin]
+
+  elastography:
+    description: "弹性成像"
+    features: []  # 未来添加
+
+  contrast:
+    description: "超声造影"
+    features: []  # 未来添加
+
+# ── 缺失特征处理策略 ──
+missing_strategy:
+  required_fatal:
+    description: "required=true 且无默认值 → 拒绝诊断，请求输入"
+    action: reject
+
+  required_with_default:
+    description: "required=true 但有默认值 → 使用默认值，标记不确定性"
+    action: use_default
+    uncertainty_penalty: 0.1
+
+  optional:
+    description: "required=false → 使用默认值或跳过"
+    action: use_default_or_skip

@@ -1,0 +1,53 @@
+# LLM Configuration — Multimodal Evidence Alignment (MEA)
+#
+# API keys are NEVER stored here. Set them via environment variables:
+#   export SILICONFLOW_API_KEY=sk-xxx
+#   export DEEPSEEK_API_KEY=sk-xxx
+#
+# To switch providers, change 'provider' and the corresponding model name.
+
+# ── Active provider ──
+# Options: siliconflow | deepseek | custom
+provider: siliconflow
+
+# ── Model ──
+model: deepseek-ai/DeepSeek-V4-Flash
+
+# ── Endpoint (auto-selected by provider, override for custom) ──
+# siliconflow: https://api.siliconflow.cn/v1
+# deepseek:    https://api.deepseek.com/v1
+base_url: null
+
+# ── API key environment variable (provider-default, override if needed) ──
+api_key_env: null
+
+# ── Generation parameters ──
+temperature: 0.1          # Low for clinical consistency
+max_tokens: 2048           # Evidence chain output
+timeout: 120               # Seconds per request
+max_retries: 3             # Exponential backoff
+
+# ── Vector index backend ──
+# Options: json (default, zero-dependency) | faiss (pip install faiss-cpu)
+vector_backend: json
+providers:
+  siliconflow:
+    base_url: https://api.siliconflow.cn/v1
+    api_key_env: SILICONFLOW_API_KEY
+    models:
+      - deepseek-ai/DeepSeek-V4-Flash
+      - Pro/deepseek-ai/DeepSeek-V4-Flash
+      - Qwen/Qwen2.5-72B-Instruct
+      - Qwen/Qwen2.5-32B-Instruct
+
+  deepseek:
+    base_url: https://api.deepseek.com/v1
+    api_key_env: DEEPSEEK_API_KEY
+    models:
+      - deepseek-chat
+      - deepseek-v4-flash
+
+  custom:
+    base_url: null         # Must be set explicitly
+    api_key_env: null      # Set to your env var name
+    models: []

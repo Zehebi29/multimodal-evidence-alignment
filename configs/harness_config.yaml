@@ -1,0 +1,31 @@
+# Multimodal Evidence Alignment (MEA) 配置
+# 版本: 1.0.0
+# 说明: 基于 Exp01-06 实验的默认配置
+
+version: "1.0.0"
+description: "默认配置 — 基于 EUS-SMT-v1 数据集实验"
+
+# 充分性计算参数
+sufficiency:
+  weights:
+    feature_coverage: 0.3    # 特征覆盖度权重
+    consistency: 0.4          # 一致性权重
+    confidence: 0.3           # 置信度权重
+  thresholds:
+    high: 0.7                 # 充分性高阈值 → 直接诊断
+    low: 0.4                  # 充分性低阈值 → 必须补充
+
+# 特征重要性（从 Meta Harness 实验得出）
+# 来源: Exp06 条件概率区分度分析
+feature_importance:
+  lesion_location: 0.9        # 胃底≈GIST, 食管≈LM, 直肠≈NET
+  layer_origin: 0.8           # 固有肌层≈GIST
+  echo_pattern: 0.6           # 低回声 vs 高回声对 LIP 区分
+  homogeneous: 0.4            # 辅助区分
+
+# 数据集信息
+dataset_version: "smt_v1"
+model_version: "v5m_five_frame"
+
+# 可复现性
+random_seed: 42
